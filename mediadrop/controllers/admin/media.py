@@ -9,6 +9,7 @@ Media Admin Controller
 """
 
 import os
+import re
 from datetime import datetime
 
 from formencode import Invalid, validators
@@ -309,7 +310,7 @@ class MediaController(BaseController):
         except UserStorageError as e:
             return dict(success=False, message=e.message)
         if media.slug.startswith('_stub_'):
-            media.title = media_file.display_name
+            media.title = svitle_prettify(media_file.display_name)
             media.slug = get_available_slug(Media, '_stub_' + media.title)
 
         # The thumbs may have been created already by add_new_media_file
@@ -712,3 +713,32 @@ class MediaController(BaseController):
         DBSession.flush()
         # Cleanup the thumbnails
         delete_thumbs(media)
+
+
+def svitle_prettify(title):
+    t = title.strip()
+    t = re.sub(r'([^ ])(\()', r'\1 \2', t)
+    t = re.sub(r' +, ', r', ', t)
+    t = re.sub(r'\s+', r' ', t)
+    m = re.match(u'(.*)\.mp3$', t)
+    if m: t = m.group(1).strip()
+    m = re.match(r'(.*) *\((\d\d?[\.,]\d\d\.? ?\d?\d?\d?\d?\.?)\)?$', t)
+    if m: t = m.group(1).strip()
+    m = re.match(r'(.*) (\d\d\.\d\d\.\d\d\d\d)\.$', t)
+    if m: t = m.group(1).strip()
+    m = re.match(u'^(Инт|З Української|ПРОП|СвСлово|Чиста Дива|Запитання|МЗУ|МЗУ-О|Наші класики|ХЛIБ НАСУЩНИЙ|Я розповім тобі про Нього|Обери свободу|Обери Свободу|Шановна Пані|ИМЕЮЩИЙ СЫНА|ДЖАЗ|БАТЬКІВСЬКІ ЗУСТРІЧІ|МАМИНА МОЛИТВА|ДАР|ЗАПИТАННЯ|НАША ОСВІТА|ОБЕРИ СВОБОДУ) - (- )?(.*)$', t)
+    if m: t = m.group(3).strip()
+    m = re.match(u'^(ПРОП) \d\d+ - (- )?(.*)$', t)
+    if m: t = m.group(3).strip()
+    m = re.match(u'^М - (.*)$', t)
+    if m: t = m.group(1).strip()
+    m = re.match(r'\d\d+ +(- +)(.*)$', t)
+    if m: t = m.group(2).strip()
+    m = re.match(r'(.*) +(\d\d+)$', t)
+    if m: t = m.group(1).strip()
+    m = re.match(r'^\d\d+-? +([^\d].*)$', t)
+    if m: t = m.group(1).strip()
+    m = re.match(r'^(.*) +-$', t)
+    if m: t = m.group(1).strip()
+    t = t.title().strip(' -')
+    return t

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is a part of MediaDrop (https://www.mediadrop.video),
 # Copyright 2009-2018 MediaDrop contributors
 # For the exact contribution history, see the git revision log.

@@ -4,7 +4,7 @@ set -x -u -e
 
 VENV=$1
 
-if [ "$VENV" == "" ]; then
+if [ -z "$VENV" ]; then
 	echo Usage: $0 venv-peth
 	exit 3
 fi

@@ -1,5 +1,9 @@
 FROM debian:buster-slim
 
+RUN echo 'deb http://archive.debian.org/debian buster main contrib non-free' > /etc/apt/sources.list
+RUN echo 'deb http://archive.debian.org/debian-security buster/updates main contrib non-free' >> /etc/apt/sources.list
+RUN echo 'deb http://archive.debian.org/debian buster-backports main contrib non-free' >> /etc/apt/sources.list
+
 RUN apt-get update -y && \
   apt-get install -y --no-install-recommends \
   build-essential \

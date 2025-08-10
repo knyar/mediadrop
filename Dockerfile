@@ -16,7 +16,8 @@ RUN apt-get update -y && \
   libjpeg-dev \
   libfreetype6-dev \
   uwsgi \
-  uwsgi-plugin-python
+  uwsgi-plugin-python \
+  wget
 
 RUN apt-get autoremove -y
 
@@ -29,8 +30,7 @@ USER media
 WORKDIR /app/src
 ADD --chown=media:media . .
 
-RUN virtualenv -p python2.7 --no-site-packages /app/venv
-RUN /app/venv/bin/python2.7 setup.py develop
+RUN ./install.sh /app/venv
 
 WORKDIR /app/deployment
 CMD /usr/bin/uwsgi --plugin python --ini-paste deployment.ini

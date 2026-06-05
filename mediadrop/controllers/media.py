@@ -77,7 +77,7 @@ class MediaController(BaseController):
         media, show = helpers.filter_library_controls(media, show)
 
         if q:
-            media = media.search(q, bool=True)
+            media = media.search(q, bool=True, require_all=True)
 
         if tag:
             tag = fetch_row(Tag, slug=tag)

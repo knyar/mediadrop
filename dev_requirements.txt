@@ -1,2 +1,2 @@
-ddt
+ddt<1.7
 PythonicTestCase

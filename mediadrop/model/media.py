@@ -257,6 +257,28 @@ def _setup_mysql_fulltext_indexes():
         )
 _setup_mysql_fulltext_indexes()
 
+def _require_all_terms(search):
+    """Rewrite a plain search string into a MySQL boolean-mode query that
+    requires every term to be present.
+
+    Each whitespace-separated word (or "quoted phrase") is prefixed with the
+    ``+`` operator, so ``john kowalski`` becomes ``+john +kowalski`` and only
+    matches rows that contain *both* words. Any boolean operators the user may
+    have typed at the start of a term are stripped first so the term is always
+    required.
+
+    If no usable terms are found, the original search string is returned
+    unchanged so we never hand an empty query to MySQL.
+    """
+    # Match quoted phrases ("...") or runs of non-whitespace characters.
+    terms = re.findall(r'"[^"]+"|\S+', search)
+    required = []
+    for term in terms:
+        term = term.lstrip('+-<>~')
+        if term:
+            required.append('+' + term)
+    return ' '.join(required) or search
+
 class MediaQuery(Query):
     def reviewed(self, flag=True):
         return self.filter(Media.reviewed == flag)
@@ -297,22 +319,31 @@ class MediaQuery(Query):
     def order_by_popularity(self):
         return self.order_by(Media.popularity_points.desc())
 
-    def search(self, search, bool=False, order_by=True):
+    def search(self, search, bool=False, order_by=True, require_all=False):
         search_cols = _fulltext_indexes['public']
-        return self._search(search_cols, search, bool, order_by)
+        return self._search(search_cols, search, bool, order_by, require_all)
 
-    def admin_search(self, search, bool=False, order_by=True):
+    def admin_search(self, search, bool=False, order_by=True, require_all=False):
         search_cols = _fulltext_indexes['admin']
-        return self._search(search_cols, search, bool, order_by)
+        return self._search(search_cols, search, bool, order_by, require_all)
 
-    def _search(self, search_cols, search, bool=False, order_by=True):
+    def _search(self, search_cols, search, bool=False, order_by=True,
+                require_all=False):
         # XXX: If full text searching is not enabled, we use a very
         #      rudimentary fallback.
         if not self._fulltext_enabled():
             return self.filter(sql.or_(Media.title.ilike("%%%s%%" % search),
                                        Media.description_plain.ilike("%%%s%%" % search)))
 
-        filter = MatchAgainstClause(search_cols, search, bool)
+        # In MySQL boolean mode, bare terms are combined with OR, so a query
+        # like 'john kowalski' matches any row containing 'john' *or*
+        # 'kowalski'. When require_all is set, rewrite the query to require
+        # every term (e.g. '+john +kowalski') so all words must be present.
+        against = search
+        if bool and require_all:
+            against = _require_all_terms(search)
+
+        filter = MatchAgainstClause(search_cols, against, bool)
         query = self.join(MediaFullText).filter(filter)
         if order_by:
             # MySQL automatically orders natural lang searches by relevance,

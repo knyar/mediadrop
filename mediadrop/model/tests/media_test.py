@@ -8,6 +8,7 @@
 from pythonic_testcase import *
 
 from mediadrop.model import DBSession, Media
+from mediadrop.model.media import _require_all_terms
 from mediadrop.lib.filetypes import VIDEO
 from mediadrop.lib.i18n import setup_global_translator
 from mediadrop.lib.storage.api import add_new_media_file
@@ -72,10 +73,39 @@ class MediaTest(DBTestCase):
         assert_equals(expected_plaintext, self.media.description_plain)
 
 
+class RequireAllTermsTest(PythonicTestCase):
+    def test_prefixes_each_term_with_required_operator(self):
+        # bare terms are OR-ed in MySQL boolean mode, so we must require each
+        # one explicitly to match all words (e.g. 'john' AND 'kowalski').
+        assert_equals(u'+john +kowalski',
+                      _require_all_terms(u'john kowalski'))
+
+    def test_handles_single_term(self):
+        assert_equals(u'+john', _require_all_terms(u'john'))
+
+    def test_collapses_extra_whitespace(self):
+        assert_equals(u'+spaced +out',
+                      _require_all_terms(u'  spaced   out '))
+
+    def test_preserves_quoted_phrases(self):
+        assert_equals(u'+"john kowalski" +smith',
+                      _require_all_terms(u'"john kowalski" smith'))
+
+    def test_strips_existing_boolean_operators(self):
+        assert_equals(u'+john +bad', _require_all_terms(u'+john -bad'))
+
+    def test_keeps_trailing_wildcard(self):
+        assert_equals(u'+john*', _require_all_terms(u'john*'))
+
+    def test_returns_empty_query_unchanged(self):
+        assert_equals(u'', _require_all_terms(u''))
+
+
 import unittest
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(MediaTest))
+    suite.addTest(unittest.makeSuite(RequireAllTermsTest))
     return suite
 
 if __name__ == '__main__':

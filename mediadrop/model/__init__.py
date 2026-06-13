@@ -226,7 +226,14 @@ class MatchAgainstClause(ColumnElement):
 
     def __init__(self, columns, against, bool=False):
         self.columns = ClauseList(*columns)
-        self.against = bindparam('search', against)
+        # ``unique=True`` makes SQLAlchemy generate a distinct name for each
+        # bind parameter (e.g. ``search_1``, ``search_2``). A single search may
+        # build more than one MatchAgainstClause in the same statement -- the
+        # WHERE filter and the ORDER BY relevance clause -- and those can carry
+        # *different* values (e.g. ``+john +kowalski`` vs ``john kowalski``).
+        # Without a unique name they collide on the shared ``search`` bind and
+        # one value clobbers the other non-deterministically.
+        self.against = bindparam('search', against, unique=True)
         self.bool = bool
 
 @compiles(MatchAgainstClause, 'mysql')

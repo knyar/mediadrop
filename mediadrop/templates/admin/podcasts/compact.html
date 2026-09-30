@@ -1,0 +1,66 @@
+<!--!
+This file is a part of MediaDrop (https://www.mediadrop.video),
+Copyright 2009-2018 MediaDrop contributors
+For the exact contribution history, see the git revision log.
+The source code contained in this file is licensed under the GPLv3 or
+(at your option) any later version.
+See LICENSE.txt in the main project directory, for more information.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+<xi:include href="../master.html" />
+<xi:include href="./_box-head.html" />
+<head>
+	<title>Podcasts</title>
+	<link href="${h.url_for('/admin/styles/forms.css')}" media="screen" rel="stylesheet" type="text/css" />
+	<link href="${h.url_for('/admin/styles/podcasts.css')}" media="screen" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="${h.url_for('/admin/scripts/sortable.js')}"></script>
+	<script type="text/javascript">
+		window.addEvent('domready', function(){
+			new SortableTable('podcast-order-table', {
+				saveUrl: '${h.url_for(action='save_order')}',
+				prefix: 'podcast-',
+				status: 'podcast-order-status',
+				messages: {
+					saving: '${_('Saving').replace("'", "\\'")}',
+					saved: '${_('Saved!').replace("'", "\\'")}',
+					failure: '${_('Saving failed. Please try again.').replace("'", "\\'")}'
+				}
+			});
+		});
+	</script>
+</head>
+<body class="menu-podcasts-on">
+	<div class="box">
+		${podcasts_box_head('compact')}
+		<p class="box-content podcast-order-help">Drag and drop the podcasts to change the order in which they are listed on the site.</p>
+		<table cellpadding="0" cellspacing="0" id="podcast-order-table">
+			<thead>
+				<tr>
+					<th class="podcast-order-handle"></th>
+					<th>Title</th>
+					<th class="podcast-order-episodes center">Episodes</th>
+					<th class="podcast-order-last-episode">Last episode</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr py:if="not podcasts">
+					<td colspan="4">None Found</td>
+				</tr>
+				<tr py:for="podcast in podcasts" id="podcast-${podcast.id}">
+					<td class="podcast-order-handle"><span class="podcast-order-grip" title="Drag and drop to reorder"></span></td>
+					<td><a href="${h.url_for(action='edit', id=podcast.id)}">${podcast.title}</a></td>
+					<td class="center">
+						<a href="${h.url_for(controller='/admin/media', podcast=podcast.slug)}" py:strip="not podcast.media_count">${podcast.media_count}</a>
+					</td>
+					<td py:content="podcast.last_episode_published_on and h.format_date(podcast.last_episode_published_on) or '-'" />
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div id="podcast-order-status" class="hidden"></div>
+</body>
+</html>

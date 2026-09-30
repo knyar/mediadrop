@@ -18,6 +18,7 @@ from mediadrop.model import Podcast
 order_columns = {
     'id': Podcast.id,
     'slug': Podcast.slug,
+    'sort_order': Podcast.sort_order,
 }
 
 class PodcastsController(BaseController):
@@ -32,7 +33,9 @@ class PodcastsController(BaseController):
 
         :param order:
             A column name and 'asc' or 'desc', seperated by a space.
-            Defaults to newest podcast first (id desc).
+            The column can be 'id', 'slug' or 'sort_order' (the order
+            chosen in the admin panel). Defaults to oldest podcast first
+            (id asc).
         :type order: str
 
         :param offset:

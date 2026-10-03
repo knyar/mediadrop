@@ -1,0 +1,27 @@
+<!--!
+This file is a part of MediaDrop (https://www.mediadrop.video),
+Copyright 2009-2018 MediaDrop contributors
+For the exact contribution history, see the git revision log.
+The source code contained in this file is licensed under the GPLv3 or
+(at your option) any later version.
+See LICENSE.txt in the main project directory, for more information.
+-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      py:strip="">
+	<div py:def="podcasts_box_head(view)" class="box-head">
+		<h1>Podcasts</h1>
+		<a id="add-btn" href="${h.url_for(action='edit', id='new')}" class="btn inline"><span>Add Podcast</span></a>
+		<div id="podcast-views" class="f-rgt">
+			<py:choose test="view">
+				<span py:when="'full'" class="btn inline active unclickable f-lft"><span>Full list</span></span>
+				<a py:otherwise="" href="${h.url_for(action='index')}" class="btn inline f-lft"><span>Full list</span></a>
+			</py:choose>
+			<py:choose test="view">
+				<span py:when="'compact'" class="btn inline active unclickable f-lft"><span>Compact list</span></span>
+				<a py:otherwise="" href="${h.url_for(action='compact')}" class="btn inline f-lft"><span>Compact list</span></a>
+			</py:choose>
+		</div>
+		<!--!<span class="box-head-sec">${h.doc_link('admin/podcasts', '')}</span>-->
+	</div>
+</html>

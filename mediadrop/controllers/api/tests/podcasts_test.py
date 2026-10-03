@@ -36,6 +36,29 @@ class PodcastsAPITest(ControllerTestCase, RequestMixin):
         slugs = [podcast['slug'] for podcast in response.json['podcasts']]
         assert_equals([u'beta-show', u'hello-world', u'alpha-show'], slugs)
 
+    def test_lists_podcasts_in_the_same_position_alphabetically(self):
+        app_globals.settings['api_secret_key_required'] = 'false'
+        hello_world = Podcast.query.one()
+        zulu = Podcast.example(title=u'Zulu Show')
+        alpha = Podcast.example(title=u'Alpha Show')
+        hello_world.sort_order = 2
+        zulu.sort_order = 1
+        alpha.sort_order = 1
+        DBSession.commit()
+
+        expected_slugs = {
+            'asc': [u'alpha-show', u'zulu-show', u'hello-world'],
+            'desc': [u'hello-world', u'alpha-show', u'zulu-show'],
+        }
+        for direction, expected in expected_slugs.items():
+            request = self.init_fake_request(method='GET',
+                request_uri='/api/podcasts?order=sort_order%20' + direction)
+            response = self.call_controller(PodcastsController, request)
+
+            assert_equals(200, response.status_int)
+            slugs = [podcast['slug'] for podcast in response.json['podcasts']]
+            assert_equals(expected, slugs)
+
 
 def suite():
     import unittest

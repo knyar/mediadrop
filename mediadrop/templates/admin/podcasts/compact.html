@@ -51,8 +51,11 @@ See LICENSE.txt in the main project directory, for more information.
 					<td colspan="4">None Found</td>
 				</tr>
 				<tr py:for="podcast in podcasts" id="podcast-${podcast.id}">
-					<td class="podcast-order-handle"><span class="podcast-order-grip" title="Drag and drop to reorder"></span></td>
-					<td><a href="${h.url_for(action='edit', id=podcast.id)}">${podcast.title}</a></td>
+					<td class="podcast-order-handle"><span class="podcast-order-grip" title="Drag and drop to reorder"></span>
+						<button class="uparrow" type="button" aria-describedby="podcast-title-${podcast.id}">${_('Up')}</button>
+						<button class="downarrow" type="button" aria-describedby="podcast-title-${podcast.id}">${_('Down')}</button>
+					</td>
+					<td><a id="podcast-title-${podcast.id}" href="${h.url_for(action='edit', id=podcast.id)}">${podcast.title}</a></td>
 					<td class="center">
 						<a href="${h.url_for(controller='/admin/media', podcast=podcast.slug)}" py:strip="not podcast.media_count">${podcast.media_count}</a>
 					</td>
@@ -61,6 +64,6 @@ See LICENSE.txt in the main project directory, for more information.
 			</tbody>
 		</table>
 	</div>
-	<div id="podcast-order-status" class="hidden"></div>
+	<div id="podcast-order-status" role="status" aria-live="polite" aria-atomic="true"></div>
 </body>
 </html>

@@ -34,8 +34,8 @@ class PodcastsController(BaseController):
         :param order:
             A column name and 'asc' or 'desc', seperated by a space.
             The column can be 'id', 'slug' or 'sort_order' (the order
-            chosen in the admin panel). Defaults to oldest podcast first
-            (id asc).
+            chosen in the admin panel, podcasts in the same position are
+            sorted by title). Defaults to oldest podcast first (id asc).
         :type order: str
 
         :param offset:
@@ -72,7 +72,10 @@ class PodcastsController(BaseController):
         if not order:
             order = 'id asc'
 
-        query = query.order_by(get_order_by(order, order_columns))
+        # Podcasts can share a sort_order: list them alphabetically like the
+        # rest of the site does, then by ID so that paging is stable.
+        query = query.order_by(get_order_by(order, order_columns),
+                               Podcast.title, Podcast.id)
 
         start = int(offset)
         limit = min(int(limit), int(request.settings['api_media_max_results']))

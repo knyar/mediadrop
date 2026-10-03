@@ -61,6 +61,24 @@ class PodcastsControllerTest(ControllerTestCase):
         assert_equals('0', episodes)
         assert_equals('-', last_episode)
 
+    def test_compact_list_has_buttons_to_reorder_podcasts_with_the_keyboard(self):
+        podcast, = self.create_podcasts(u'A')
+
+        response = self.call_podcasts_controller('/admin/podcasts/compact')
+
+        handle, title, episodes, last_episode = self.podcast_cells(response, podcast.id)
+        title_id = 'podcast-title-%d' % podcast.id
+        assert_contains('<a id="%s"' % title_id, title)
+        for css_class, label in (('uparrow', 'Up'), ('downarrow', 'Down')):
+            button = '<button class="%s" type="button" aria-describedby="%s">%s</button>'
+            assert_contains(button % (css_class, title_id, label), handle)
+
+    def test_compact_list_announces_saving_to_screen_readers(self):
+        response = self.call_podcasts_controller('/admin/podcasts/compact')
+
+        status = '<div id="podcast-order-status" role="status" aria-live="polite" aria-atomic="true"></div>'
+        assert_contains(status, response.body)
+
     def test_can_save_order(self):
         a, b, c = self.create_podcasts(u'A', u'B', u'C')
 

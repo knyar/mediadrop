@@ -16,6 +16,9 @@
  * POSTed to saveUrl in their new order, so each request saves the complete
  * order. Row IDs are taken from the id attributes, e.g. 'podcast-12' with
  * the prefix 'podcast-'.
+ *
+ * Rows can also be moved with the keyboard: buttons with the classes
+ * uparrow and downarrow move their row up or down by one place.
  */
 var SortableTable = new Class({
 
@@ -44,7 +47,9 @@ var SortableTable = new Class({
 			row.set('draggable', 'true');
 			// links and images would be dragged instead of their row
 			row.getElements('a, img').set('draggable', 'false');
-		});
+			row.getElements('.uparrow').addEvent('click', this.move.bind(this, [row, 'up']));
+			row.getElements('.downarrow').addEvent('click', this.move.bind(this, [row, 'down']));
+		}, this);
 		this.tbody.addEventListener('dragstart', this.onDragStart.bind(this), false);
 		this.tbody.addEventListener('dragend', this.onDragEnd.bind(this), false);
 		// accept drops anywhere on the page, only a cancelled drag is undone
@@ -99,6 +104,15 @@ var SortableTable = new Class({
 		}
 	},
 
+	move: function(row, direction){
+		var neighbour = (direction == 'up') ? row.getPrevious() : row.getNext();
+		if (!neighbour) return;
+		// move the neighbouring row, moving this row would take the focus
+		// away from its button
+		neighbour.inject(row, (direction == 'up') ? 'after' : 'before');
+		this.save();
+	},
+
 	save: function(){
 		if (this.saving) {
 			// send the latest order when the current request is finished
@@ -129,11 +143,13 @@ var SortableTable = new Class({
 		if (!this.status) return;
 		$clear(this.hideStatusTimer);
 		var cssClass = {saving: 'form-saving', saved: 'form-saved', failure: 'form-save-error'}[state];
-		this.status.empty().removeClass('hidden').adopt(
+		// The status element is a live region, so it stays in the page
+		// for screen readers to announce the messages and is only emptied.
+		this.status.empty().adopt(
 			new Element('span', {'class': cssClass, text: this.options.messages[state]})
 		);
 		if (state == 'saved') {
-			this.hideStatusTimer = this.status.addClass.delay(2000, this.status, 'hidden');
+			this.hideStatusTimer = this.status.empty.delay(2000, this.status);
 		}
 	},
 

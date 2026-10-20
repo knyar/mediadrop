@@ -1467,8 +1467,9 @@ msgid "Media Library"
 msgstr "Бібліотека"
 
 #: mediadrop/templates/master.html:88 mediadrop/templates/admin/master.html:63
-#: mediadrop/templates/admin/podcasts/index.html:17
-#: mediadrop/templates/admin/podcasts/index.html:24
+#: mediadrop/templates/admin/podcasts/_box-head.html:13
+#: mediadrop/templates/admin/podcasts/compact.html:17
+#: mediadrop/templates/admin/podcasts/index.html:18
 msgid "Podcasts"
 msgstr "Подкасти"
 
@@ -2128,6 +2129,20 @@ msgstr "Вгору"
 msgid "Down"
 msgstr "Вниз"
 
+#: mediadrop/templates/admin/podcasts/_box-head.html:14
+msgid "Add Podcast"
+msgstr "Додати подкаст"
+
+#: mediadrop/templates/admin/podcasts/_box-head.html:17
+#: mediadrop/templates/admin/podcasts/_box-head.html:18
+msgid "Full list"
+msgstr "Повний список"
+
+#: mediadrop/templates/admin/podcasts/_box-head.html:21
+#: mediadrop/templates/admin/podcasts/_box-head.html:22
+msgid "Compact list"
+msgstr "Компактний список"
+
 #: mediadrop/templates/admin/podcasts/_podcast-table.html:39
 msgid "Category:"
 msgstr "Категорія:"
@@ -2152,6 +2167,24 @@ msgstr[0] "Продивитися перший эпизод %(num)s"
 msgstr[1] "Продивитися всі %(num)s эпизоди"
 msgstr[2] "Продивитися всі %(num)s эпизодів"
 
+#: mediadrop/templates/admin/podcasts/compact.html:39
+msgid ""
+"Drag and drop the podcasts to change the order in which they are listed "
+"on the site."
+msgstr "Перетягуйте подкасти, щоб змінити порядок, у якому вони показані на сайті."
+
+#: mediadrop/templates/admin/podcasts/compact.html:45
+msgid "Episodes"
+msgstr "Випуски"
+
+#: mediadrop/templates/admin/podcasts/compact.html:46
+msgid "Last episode"
+msgstr "Останній випуск"
+
+#: mediadrop/templates/admin/podcasts/compact.html:54
+msgid "Drag and drop to reorder"
+msgstr "Перетягніть, щоб змінити порядок"
+
 #: mediadrop/templates/admin/podcasts/edit.html:16
 msgid "Edit Podcast"
 msgstr "Змінити подкаст"
@@ -2172,10 +2205,6 @@ msgstr "Отримати iTunes URL"
 #: mediadrop/templates/admin/podcasts/feed_fieldset.html:40
 msgid "Get a Feedburner URL"
 msgstr "Отримати Feedburner URL"
-
-#: mediadrop/templates/admin/podcasts/index.html:25
-msgid "Add Podcast"
-msgstr "Додати подкаст"
 
 #: mediadrop/templates/admin/settings/advertising.html:17
 #: mediadrop/templates/admin/settings/advertising.html:23

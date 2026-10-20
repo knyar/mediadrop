@@ -50,8 +50,56 @@ class PodcastsController(BaseController):
         """
         podcasts = DBSession.query(Podcast)\
             .options(orm.undefer('media_count'))\
-            .order_by(Podcast.title)
+            .order_by(Podcast.sort_order, Podcast.title)
         return dict(podcasts=podcasts)
+
+
+    @expose('admin/podcasts/compact.html')
+    @observable(events.Admin.PodcastsController.compact)
+    def compact(self, **kwargs):
+        """List all podcasts in a compact table which can be reordered.
+
+        :rtype: Dict
+        :returns:
+            podcasts
+                The list of all :class:`~mediadrop.model.podcasts.Podcast`
+                instances, in the order they are displayed on the site.
+        """
+        podcasts = DBSession.query(Podcast)\
+            .options(orm.undefer('media_count'),
+                     orm.undefer('last_episode_published_on'))\
+            .order_by(Podcast.sort_order, Podcast.title)\
+            .all()
+        return dict(podcasts=podcasts)
+
+
+    @expose('json', request_method='POST')
+    @autocommit
+    @observable(events.Admin.PodcastsController.save_order)
+    def save_order(self, ids=None, **kwargs):
+        """Save the order in which podcasts are displayed.
+
+        Called by the :meth:`compact` list whenever a podcast was moved.
+
+        :param ids: Podcast IDs in their new order.
+        :type ids: list
+        :rtype: JSON dict
+        :returns:
+            success
+                bool
+
+        """
+        if not ids:
+            ids = []
+        elif not isinstance(ids, list):
+            ids = [ids]
+        try:
+            ids = [int(id) for id in ids]
+        except ValueError:
+            return dict(success=False)
+
+        Podcast.reorder(ids)
+        return dict(success=True)
 
 
     @expose('admin/podcasts/edit.html')

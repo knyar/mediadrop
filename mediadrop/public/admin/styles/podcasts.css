@@ -79,6 +79,71 @@
 	font-weight: bold;
 }
 
+#podcast-views {
+	margin: -1px 0 -3px 0;
+}
+#podcast-views .btn {
+	margin-left: 5px;
+}
+
+/* Compact list, podcasts are reordered with drag and drop or the arrows */
+.podcast-order-help {
+	color: #627789;
+}
+#podcast-order-table tbody tr td {
+	padding-top: 6px;
+	padding-bottom: 6px;
+}
+#podcast-order-table th.podcast-order-handle {
+	width: 48px;
+	padding-right: 0;
+}
+#podcast-order-table td.podcast-order-handle {
+	padding-right: 0;
+	white-space: nowrap;
+}
+#podcast-order-table td.podcast-order-handle button {
+	vertical-align: middle;
+}
+#podcast-order-table th.podcast-order-episodes {
+	width: 80px;
+}
+#podcast-order-table th.podcast-order-last-episode {
+	width: 120px;
+}
+#podcast-order-table tr[draggable] {
+	cursor: move;
+}
+#podcast-order-table tr[draggable]:hover td {
+	background-color: #f2f7fb;
+}
+#podcast-order-table tr.dragging td {
+	background-color: #dcebf6;
+	color: #8a9eae;
+}
+.podcast-order-grip {
+	display: inline-block;
+	vertical-align: middle;
+	width: 8px;
+	height: 14px;
+	background-image: radial-gradient(circle, #9aabba 1px, transparent 1.5px);
+	background-size: 4px 4px;
+}
+#podcast-order-status {
+	position: fixed;
+	right: 20px;
+	bottom: 20px;
+	z-index: 100;
+	background: #fff;
+	border: 1px solid #b4bac3;
+	border-radius: 5px;
+	box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+}
+#podcast-order-status:empty {
+	border: 0;
+	box-shadow: none;
+}
+
 #podcast-form .details_fieldset .fieldlabel {
 	width: 95px;
 }

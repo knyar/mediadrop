@@ -181,6 +181,8 @@ class Admin(object):
 
     class PodcastsController(object):
         index = Event(['**kwargs'])
+        compact = Event(['**kwargs'])
+        save_order = Event(['**kwargs'])
         edit = Event(['**kwargs'])
         save = Event(['**kwargs'])
         save_thumb = Event(['**kwargs'])
